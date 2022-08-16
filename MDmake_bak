@@ -1,0 +1,80 @@
+
+MD.exe: main.o int.o angl.o bonds.o ljM.o ThreeBody.o rep.o phi.o chiral.o ran.o\
+ sym.o init.o ss.o T.o fs.o write.o LD.o box.o coulomb.o debyehuckel.o\
+ repEllipsoid.o distances.o dhenergytable.o dynamicRange.o
+	ifort -static -O3 -axP main.o int.o angl.o bonds.o ljM.o ThreeBody.o rep.o \
+	ran.o phi.o chiral.o sym.o LD.o init.o ss.o T.o fs.o write.o box.o \
+	coulomb.o debyehuckel.o  repEllipsoid.o distances.o \
+        dhenergytable.o dynamicRange.o -o MD.exe
+
+coulomb.o: coulomb.c 
+	gcc -c coulomb.c
+
+debyehuckel.o: debyehuckel.c 
+	gcc -c debyehuckel.c
+
+dhenergytable.o: dhenergytable.c 
+	  gcc -c dhenergytable.c
+
+box.o: box.c 
+	gcc -c box.c
+
+bonds.o: bonds.f MD.com
+	ifort -c -O3 -axP -static bonds.f
+
+distances.o: distances.f MD.com
+	ifort -c -O3 -axP -static distances.f
+
+angl.o: angl.f MD.com
+	ifort -c -O3 -axP -static angl.f
+
+phi.o: phi.f MD.com
+	ifort -c -O3 -axP -static phi.f
+
+chiral.o: chiral.f MD.com
+	ifort -c -O3 -axP -static chiral.f
+
+write.o: write.f MD.com
+	ifort -c -O3 -axP -static write.f
+
+main.o: main.f MD.com
+	ifort -c -O3 -axP -static main.f
+
+sym.o: sym.f MD.com
+	ifort -c -O3 -axP -static sym.f
+
+LD.o:LD.f MD.com
+	ifort -c -O3 -axP -static LD.f
+
+int.o: int.f MD.com
+	ifort -c -O3 -axP -static int.f
+
+ljM.o: ljM.f MD.com
+	ifort -c -O3 -axP -static ljM.f
+
+ThreeBody.o: ThreeBody.f MD.com
+	ifort -c -O3 -axP -static ThreeBody.f
+
+rep.o: rep.f MD.com
+	ifort -c -O3 -axP -static rep.f
+
+repEllipsoid.o: repEllipsoid.f MD.com
+	ifort -c -O3 -axP -static repEllipsoid.f
+	
+ran.o: ran.f MD.com
+	ifort -c -O3 -axP -static ran.f
+
+init.o: init.f MD.com
+	ifort -c -O3 -axP -static init.f
+
+ss.o: ss.f  MD.com
+	ifort -c -O3 -axP -static ss.f
+
+T.o: T.f MD.com
+	ifort -c -O3 -axP -static T.f
+
+fs.o: fs.f MD.com
+	ifort -c -O3 -axP -static fs.f
+
+dynamicRange.o: dynamicRange.f MD.com
+	ifort -c -O3 -axP -static dynamicRange.f
