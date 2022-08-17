@@ -4,21 +4,31 @@ Inputs are: MDwrapper.prefs file and <name>.dat file as attached here:
 fragB_helix_translated_updated.dat 
 MDWrapper.prefs 
 running with ~lavi/scripts/MD/MDWrapper.pl .MDWrapper.pl reads MDWrapper.prefs.schema, MDWrapper.prefs files.
-**MDWrapper.prefs**: a configuration file including:
+
+# **MDWrapper.prefs**:
+a configuration file including:
+
                 BASE_PATH path from which the script rans (DIRECTORY NEW WRITABLE DEFAULT:.); GO_PATH: (BINARY) path for MD.exe file that exists!; 
-                INPUT_FILE_PATH ./<name>.dat file (TEXT); RUN_POST_EXECUTION_ANALYSIS=NO; optional: #POST_EXECUTION_ANALYSIS_PROG=/home/lavi/scripts/ProtMTDiff.pl;
-                EXECUTION_TYPE (FLAG OPTIONS:LD|MD); GAMMA (FLOAT) physical parameter; **WRITE_ALL_CONTACTS flag (YES|NO); CONTACT_RANGES_DEFINED (YES|NO)** (??);
-                HAS_STATIC_ATOMS (YES|NO); DYNAMIC_ATOMS_RANGE (ARRAY TYPE:INTEGER) defining static atoms region like 1,3,6,8 : CA 1-3 and 6-8 ;
-                are dynamic (4,5 static); running post execution analysis flag; CONFINE_IN_BOX (YES|NO) flag; BOX_X_MIN (FLOAT DEFAULT:-150.0) up to BOX_Z_MAX all box spatial limits;
+                INPUT_FILE_PATH ./<name>.dat file (TEXT); RUN_POST_EXECUTION_ANALYSIS=NO; optional:
+                #POST_EXECUTION_ANALYSIS_PROG=/home/lavi/scripts/ProtMTDiff.pl;EXECUTION_TYPE (FLAG OPTIONS:LD|MD); GAMMA (FLOAT) physical parameter;
+                **WRITE_ALL_CONTACTS flag (YES|NO); CONTACT_RANGES_DEFINED (YES|NO)** (??); HAS_STATIC_ATOMS (YES|NO); 
+                DYNAMIC_ATOMS_RANGE (ARRAY TYPE:INTEGER) defining static atoms region like 1,3,6,8 : CA 1-3 and 6-8 ;
+                are dynamic (4,5 static); running post execution analysis flag; CONFINE_IN_BOX (YES|NO) flag; 
+                BOX_X_MIN (FLOAT DEFAULT:-150.0) up to BOX_Z_MAX all box spatial limits;
                 DIELECTRIC_CONSTANT (FLOAT) value; APPLY_ELECTROSTATICS_BETWEEN_NEIGHBORS (YES|NO); 
-                ELECTROSTATICS_CUTOFF_TYPE (OPTIONS:*ENERGY*|DISTANCE|NONE DEFAULT:DISTANCE); ELECTROSTATICS_ENERGY_CUTOFF (FLOAT); BOX_COEFFICIENT: (FLOAT) how repulsive is it; USE_DEBYE_HUCKEL; 
+                ELECTROSTATICS_CUTOFF_TYPE (OPTIONS:*ENERGY*|DISTANCE|NONE DEFAULT:DISTANCE); ELECTROSTATICS_ENERGY_CUTOFF (FLOAT); 
+                BOX_COEFFICIENT: (FLOAT) how repulsive is it; USE_DEBYE_HUCKEL; 
                 USE_ELECTROSTATICS (YES|NO); USE_DH_ENERGY_TABLE(??);
-                IONIC_STRENGTH corresponding to concentration (0.05 is ~50*3 Molar, calibration is required); IONIC_RADIUS; SOLVENT_DENSITY; MODEL_TYPE (CA|CB),
-                EXECUTION_STEPS (INTEGER), OUTPUT_FREQUENCY-> how many steps to 'skip' writing output; TEMPERATURES -> fraction of 273;
-                ITERATIONS_PER_TEMPERATURE: how many repetitions for this input; TAU; STORE_TRAJECTORIES; TRAJECTORY_OUTPUT_FREQUENCY; STORE_TRAJECTORY_DISTANCES;
-                (also the following not to touch parameters: EXECUTION_LOCATION=LOCAL; #EXECUTION_LOCATION=CLUSTER, MAX_PROCESSORS_ALLOCATION=350; 
+                IONIC_STRENGTH corresponding to concentration (0.05 is ~50*3 Molar, calibration is required); IONIC_RADIUS; SOLVENT_DENSITY; 
+                MODEL_TYPE (CA|CB),EXECUTION_STEPS (INTEGER), OUTPUT_FREQUENCY-> how many steps to 'skip' writing output;
+                TEMPERATURES -> fraction of 273; ITERATIONS_PER_TEMPERATURE: how many repetitions for this input; TAU; STORE_TRAJECTORIES;
+                TRAJECTORY_OUTPUT_FREQUENCY; STORE_TRAJECTORY_DISTANCES;(also the following not to touch parameters: EXECUTION_LOCATION=LOCAL;
+                #EXECUTION_LOCATION=CLUSTER, MAX_PROCESSORS_ALLOCATION=350; 
                 USE_EMPTY_SLOTS (YES|NO); USE_COPY_QUEUE=NO (YES|NO); CLEAN_SCRATCH_FOLDER=YES (YES|NO)
- **MDWrapper.prefs.schema**: template file including: defaults for the above defenitions and type (int, float etc), options to choose from in brackets above:
+				
+# **MDWrapper.prefs.schema**: 
+template file including: defaults for the above defenitions and type (int, float etc), options to choose from in brackets above:
+ 
                 [PREFERENCES]
                 LOG_FILE=TEXT NEW DEFAULT:MDWrapper.log; EXECUTION_LOCATION=FLAG OPTIONS:CLUSTER|LOCAL; MAX_PROCESSORS_ALLOCATION=INTEGER DEFAULT:30 etc...             
                 More interseting: **USE_INITIAL_CONDITIONS=FLAG OPTIONS:1|2|3 DEFAULT:3; INITIAL_CONDITIONS_FILE_PATH=TEXT; **
@@ -28,9 +38,12 @@ running with ~lavi/scripts/MD/MDWrapper.pl .MDWrapper.pl reads MDWrapper.prefs.s
                 USE_ELLIPSOID_REPULSIONS=FLAG OPTIONS:YES|NO DEFAULT:NO;
                 [DEPENDENCIES]
                 **USE_INITIAL_CONDITIONS=1,2:INITIAL_CONDITIONS_FILE_PATH**; EXECUTION_TYPE=LD:GAMMA; HAS_STATIC_ATOMS=YES:DYNAMIC_ATOMS_RANGE; 
-                CONFINE_IN_BOX=YES:BOX_X_DIMENSION,BOX_Y_DIMENSION,BOX_Z_DIMENSION; USE_ELECTROSTATICS=YES:DIELECTRIC_CONSTANT,APPLY_ELECTROSTATICS_BETWEEN_NEIGHBORS,ELECTROSTATICS_ENERGY_CUTOFF,USE_DEBYE_HUCKEL,COMPENSATE_ELECTROSTATIC_CONTACTS
+                CONFINE_IN_BOX=YES:BOX_X_DIMENSION,BOX_Y_DIMENSION,BOX_Z_DIMENSION;
+				USE_ELECTROSTATICS=YES:DIELECTRIC_CONSTANT,APPLY_ELECTROSTATICS_BETWEEN_NEIGHBORS,ELECTROSTATICS_ENERGY_CUTOFF,USE_DEBYE_HUCKEL,
+				COMPENSATE_ELECTROSTATIC_CONTACTS
                 USE_DEBYE_HUCKEL=YES:IONIC_STRENGTH,IONIC_RADIUS,SOLVENT_DENSITY,USE_DH_ENERGY_TABLE; MODEL_TYPE=CB:USE_CHIRALS,USE_ELLIPSOID_REPULSIONS;
-                RUN_POST_EXECUTION_ANALYSIS=YES:POST_EXECUTION_ANALYSIS_PROG;       STORE_TRAJECTORIES=YES:TRAJECTORY_OUTPUT_FREQUENCY,STORE_TRAJECTORY_DISTANCES
+                RUN_POST_EXECUTION_ANALYSIS=YES:POST_EXECUTION_ANALYSIS_PROG;       
+				STORE_TRAJECTORIES=YES:TRAJECTORY_OUTPUT_FREQUENCY,STORE_TRAJECTORY_DISTANCES
                 ELECTROSTATICS_CUTOFF_TYPE=ENERGY:ELECTROSTATICS_ENERGY_CUTOFF; ELECTROSTATICS_CUTOFF_TYPE=DISTANCE:ELECTROSTATICS_DISTANCE_CUTOFF;
                 CONTACT_RANGES_DEFINED=YES:CONTACT_RANGES_FILE
                 
