@@ -111,9 +111,9 @@
       read(60,*) useElectrostatics !whether to apply coulombic interactions
       if(useElectrostatics .eq. 'YES')then
         read(60,*) deConstant !dielectric constant in epsilon 0 units
-        read(60,*) esMinBeadDistance !dielectric constant in epsilon 0 units
-        read(60,*) esCutoffType ! minimum energy to apply electrostatic force
-	useESCutoff = 0
+        read(60,*) esMinBeadDistance ! minimum index difference between beads to apply electrostatics
+        read(60,*) esCutoffType !type of cutoff for electrostatic interaction.
+	useESCutoff = 0 
         if(esCutoffType .eq. 'ENERGY')then
           read(60,*) esEnergyCutoff ! minimum energy to apply electrostatic force
 	  useESCutoff = 1
@@ -174,7 +174,7 @@
 ! Close the files that holds the temperature
 
       close(71)
-
+! unclear where (71) comes from and why (60) is not being closed here. Also note the code duplication below reading random variables again
 ! this writes the new xrandom, yrandom and zrandom 
       open(63, file = 'random.dat', access = 
      Q 'SEQUENTIAL',  status = 'UNKNOWN')
