@@ -2,24 +2,38 @@
 This file describes all the calculations performed in each file seperately, strating from running **MD.exe** file as performed in .csh file created at MDWrapper.pl
 
 # fortran shortacuts
-- 60 is settings.dat (mandatory) appears in ss.f,
+
 - 6 is Trajectory file | appears in ss.f,init.f
-- 93 is TrajDist file |	appears in ss.f,
-- 99 is EnergyTot | appears in ss.f,
-- 70 is EnergyTerm | appears in ss.f,
+- 8 ??| appears in int.f (closed)
+- 10 ??| appears in int.f (closed)
+- 11 ??| appears in int.f (closed)
 - 12 is ContactFile  | appears in ss.f,
 - 13 is ThreeBodyFile |	appears in ss.f,
 - 14 is writeAllContacts (optional) | appears in ss.f,
 - 15 is ContactRangesTwoBodyFile (optional if above is set 'YES') | appears in ss.f,
 - 16 is ContactRangesEnergyFile | appears in ss.f,
-- 53 is TemperatureVtime | appears in ss.f,
-- 63 is 'random.dat' file | appears in ss.f,
-- 71 ???? holds temperature? | appears in ss.f,
-
-- 25 is initval file (dynamic range) | appears in init.f,
+- 17 is ContactRangesFile | appears in init.f (open, close)
+- 25 is initval file (dynamic range) | appears in init.f (open,close),
 - 30 is conf (input.dat) | appears in init.f
-- 17 is ContactRangesFile | appears in init.f
+- 53 is TemperatureVtime | appears in ss.f,
+- 55 is output file | appears in write.f (open, close)
+- 58 is (?? output each step and avg temperature here) | appears in int.f
+- 60 is settings.dat (mandatory) appears in ss.f,
+- 61 is finalpx1 or 'temp' (output in case simulation crashes) | appearing in write.f (open,close)
+- 63 is 'random.dat' file | appears in ss.f (open, close),
+- 70 is EnergyTerm | appears in ss.f,
+- 71 ???? holds temperature? | appears in ss.f (closed),
+- 91 is 'time.dat' (time for all simulation) | appears in int.f
+- 93 is TrajDist file |	appears in ss.f,int.f
+- 99 is EnergyTot | appears in ss.f,int.f (integrate)
+-
+-
 
+- 999 is 'timeleft.dat' (remaining for aimulation after first integartion) | appears in int.f (opens, closed)
+
+
+
+ 
 # MD.com
 Defines common parameters and variables to be used in different functions. 
 From physical parameters like settigs for gamma and tau to their formatting (fortran). Format for X,Y,Z coordinates , velocities and forces.
@@ -60,8 +74,11 @@ When changing outputs note:
     dimension boxMin(3),boxMax(3)
           real deConstant, screeningFactor, saltCoefficient
           
+# main.f
+PROGRAM DualGo : Core Program by Paul Whitford <pcw@wpi.edu> April 2005 ;Go.f    
+indludes MD.com module and defines global: timee1, timee2, sum, sumc, DD1, DD2 
+then calls: ***start***(ss.f), **init**(init.f), **integrate**(int.f) and **stophere** (ss.f)
 
-          
 # ss.f
 Reads 'settings.dat' and 'random.dat' keys for new varaibles to use along the simulations. Checks if cutoff values are valid (range).
 Contains the following functions:
@@ -278,6 +295,71 @@ Contains the following functions:
 			other then the case  EpsC(i) = 0.01 which is now added the electrostatics value  
 
 		
-		
-      
+# int.f
+calls initializing LD/MD simulation, calls writetofile(file) and or writes to trajectories, total energy, distances (optional), 
 
+contains subroutine integrate:
+	defines variables like Res the array the length of AN and count the length of number of contacts (NC)
+	calls CPU_Time(t1) (??)
+	**writes the number of atoms to trajectory : write(6,*) AN (again??)**
+        calls noncontactsnear to find the non native non bonded list
+	
+	run over all steps with the measurement writing frequency writeout = WO, calaulate dummy: Edum= writeout - step.
+	if the step is dividble by 50, call noncontactsnear (??)
+	
+	calling 1 step integration with:
+	- 'MD' simulation : call intSymp(E ,ET, Conts, Edum, count)
+	- 'LD' : call intLD(E,ET,Conts,Edum,count)
+	call findtemp(dummyy) (??)
+	
+	if(Edum .eq. 0)then
+**! Find and return the Three-body interactions
+	  !call ThreeBody(conts, count)** ! note this is stopping the calling for 3body calculation to not slow down to much.
+	  should insert a flag: USE_3BODY
+	  in MDWrapper.prefs and update it here
+	  
+	 now if choosing to write EnergyTot:
+	 writing the energy E to this file as 99: write(99,*) E
+	 outputing the temperature to 58 file:  write(58,*) step, temp
+	 summing the temperature to Tsum, and incrementing Tcount to the next one (temperaure runs??). finally writeout = writeout + WO
+	 if trajectory writeoutT matches with current step, 
+	 call function writetofile(writei) where writei is flag (1 or 0) for the file number to write.
+	 
+	 if choose to write TrajDist (93):
+	 
+		    if(mod(step,WOT) .eq. 0)then
+		      write(93,*) step
+		      call distances()
+		    endif
+		    
+**writing to trajectories of continue and end**
+
+		if(stepstop-step .ge. WOT)then
+
+		    write(6,*) 'continue'
+
+		    else
+		    write(6,*) 'end'
+	when finished writing one measurement (WO=step), call CPU_time(t2). calculate the time it took for this analysis and then extrapulate
+	the remaining CPU time for the simulation in 'timeleft.dat' as 999.
+	After the last step calculations: write the average temperatire Tsum/Tcount to 58. Calculate time took for all the simulation,
+		write it to 91 'time.dat'. closing file 8. calling writetofile(writei) !, Res). Then close 10 and 11 (??)
+	
+	  
+# write.f
+writetofile writes the positions to file every savenum. It rewrites the positions in the same file, deleting the old position, thus not taking too much space. The output is written to two alternating files so if the program crashes while writing, the data will not be lost . Modified 10/6 to write failures also 
+
+(Note if start is 1 or 2 the filename is initval (25). Otherwise it's conf. This is used for output later)
+
+if filei=0 (input): open finalpx1 (final positionx1) as 61, if filei=1 open 'temp' as 61 . calls findtemp(KE) updating the number of steps calculated
+	untill now, current temperature and number of atoms. Then the current coordinates.
+	
+**updating trajectory with current step writecount**
+
+	        if(Trajectory .ne. 'NO')then
+		write(6,*) writecount
+		endif
+then write all step information to 61 BeadIndex(i), GroupIndex(i),AtType(i),ResID(i), X(i), Y(i), Z(i), ms(i), later including all velocities, followed by writing the number of chains and each chains's length. 
+Updating (appending to) trajectory (6) with current coordinates list .
+
+open an output file as 55 to write the temperatue, number of steps, conformation (if from conf or initval), tau, number of contacts (NC) (2body) and possible 3body (tripi).
