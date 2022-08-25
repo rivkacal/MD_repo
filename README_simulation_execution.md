@@ -6,9 +6,9 @@ This file describes all the calculations performed in each file seperately, stra
 - 6 is Trajectory file | appears in ss.f,init.f
 - 8 ??| appears in int.f (closed)
 - 10 ??| appears in int.f (closed)
-- 11 ??| appears in int.f (closed)
-- 12 is ContactFile  | appears in ss.f,
-- 13 is ThreeBodyFile |	appears in ss.f,
+- 11 ??| appears in int.f (closed), ThreeBody.f (writes)
+- 12 is ContactFile  | appears in ss.f,ThreeBody.f (writes)
+- 13 is ThreeBodyFile |	appears in ss.f,ThreeBody.f (writes)
 - 14 is writeAllContacts (optional) | appears in ss.f,
 - 15 is ContactRangesTwoBodyFile (optional if above is set 'YES') | appears in ss.f,
 - 16 is ContactRangesEnergyFile | appears in ss.f,
@@ -21,19 +21,14 @@ This file describes all the calculations performed in each file seperately, stra
 - 60 is settings.dat (mandatory) appears in ss.f,
 - 61 is finalpx1 or 'temp' (output in case simulation crashes) | appearing in write.f (open,close)
 - 63 is 'random.dat' file | appears in ss.f (open, close),
-- 70 is EnergyTerm | appears in ss.f,
+- 70 is EnergyTerm | appears in ss.f, LD.f , sym.f (writes)
 - 71 ???? holds temperature? | appears in ss.f (closed),
 - 91 is 'time.dat' (time for all simulation) | appears in int.f
 - 93 is TrajDist file |	appears in ss.f,int.f
 - 99 is EnergyTot | appears in ss.f,int.f (integrate)
--
--
-
 - 999 is 'timeleft.dat' (remaining for aimulation after first integartion) | appears in int.f (opens, closed)
 
 
-
- 
 # MD.com
 Defines common parameters and variables to be used in different functions. 
 From physical parameters like settigs for gamma and tau to their formatting (fortran). Format for X,Y,Z coordinates , velocities and forces.
@@ -73,7 +68,10 @@ When changing outputs note:
           real boxMin,boxMax, boxCoeff
     dimension boxMin(3),boxMax(3)
           real deConstant, screeningFactor, saltCoefficient
-          
+
+# MDMake
+contains all syntax to mamke any file of fortarn/c executable! 
+
 # main.f
 PROGRAM DualGo : Core Program by Paul Whitford <pcw@wpi.edu> April 2005 ;Go.f    
 indludes MD.com module and defines global: timee1, timee2, sum, sumc, DD1, DD2 
@@ -344,8 +342,48 @@ contains subroutine integrate:
 	the remaining CPU time for the simulation in 'timeleft.dat' as 999.
 	After the last step calculations: write the average temperatire Tsum/Tcount to 58. Calculate time took for all the simulation,
 		write it to 91 'time.dat'. closing file 8. calling writetofile(writei) !, Res). Then close 10 and 11 (??)
+		
+# fs.f		
+FStart initiallizes the Force arrays. includes fstart, that for every atom k assigns: Fx(k)=0.0, Fy(k)=0.0, Fz(k)=0.0		
+
+# LD.f
+contains intLD() : integrates over one time step for all particles: intLD(E,ET, Conts, outE, count )
+where E is the total potential energy, ET is the total potential and kinetic energy.
+initialize DumE(i)=0.0 where i=1:9. then calls the following routines to calculate forces:
+call Fstart, call Bonds( DumE(1)), call ANGL(DumE(2)),call dihedral(DumE(3)),call contacts(DumE(4), Conts, count, outE), call NonContacts( DumE(5)),
+optional:
+call box(X,Y,Z,Fx,Fy,Fz ,DynamicAtomRange, DynLength, DumE(6),boxMin,boxMax,boxCoeff), call chiral(DumE(8)), 
+call ellipsoidRepulsions(DumE(9)).
+If choose to use elctrostatics and debye-juckel: calculate electrostatics with:
+call debyehuckel(useESCutoff,useDHTable,esFirstAtomIndex,
+                 esSecondAtomIndex,esCharge,X,Y,Z,Fx,Fy,Fz,esPairsNum,
+                 esDistanceCutoff,DumE(7),deConstant,screeningFactor, 
+                 saltCoefficient,DebyeHuckelPotentials,DebyeHuckelForces)
+Then: Call Findtemp(DumKE)
+       ET = E + DumKE (ET again is potenial + kinetic energy that comes from temperature)	
+ if contact energy is zero then the potential energy E =  DumE(1) + DumE(2) + DumE(3) +  DumE(4) + 
+                                                          DumE(5) + DumE(6) + DumE(7) + DumE(8) + DumE(9)    
+if choose to write energy term:
+
+		if(EnergyTerm .ne. 'NO')then
+		      write(70,"(9F9.2)") DumE(1),DumE(2),DumE(3),DumE(4),DumE(5),
+		     Q DumE(6),DumE(7),DumE(8), DumE(9)
+Then for every dynamic atom:
+		
+		SD = sqrt(2*ms(i)*gamma*T/tau)
+		call gauss(0., SD, fr)
+		Vx(i) = (Vx(i)*c_e + (Fx(i)+fr)*tau/ms(i))*c_i
+		call gauss(0., SD, fr)
+		Vy(i) = (Vy(i)*c_e + (Fy(i)+fr)*tau/ms(i))*c_i
+		call gauss(0., SD, fr)
+		Vz(i) = (Vz(i)*c_e + (Fz(i)+fr)*tau/ms(i))*c_i
 	
-	  
+		! then for every atom:
+		X(i) = X(i) + Vx(i)*tau
+	        Y(i) = Y(i) + Vy(i)*tau
+	        Z(i) = Z(i) + Vz(i)*tau
+
+
 # write.f
 writetofile writes the positions to file every savenum. It rewrites the positions in the same file, deleting the old position, thus not taking too much space. The output is written to two alternating files so if the program crashes while writing, the data will not be lost . Modified 10/6 to write failures also 
 
@@ -363,3 +401,231 @@ then write all step information to 61 BeadIndex(i), GroupIndex(i),AtType(i),ResI
 Updating (appending to) trajectory (6) with current coordinates list .
 
 open an output file as 55 to write the temperatue, number of steps, conformation (if from conf or initval), tau, number of contacts (NC) (2body) and possible 3body (tripi).
+
+# ran.f
+subroutine random: generator of variate on 0, 1  Purpose: generates a pseudorandom number RANDwhose distribution is flat on the interval (0,1).Uses as seeds xrandom, yrandom, zrandom stored between runs in file RANDOM. DAT
+
+subroutine gauss(MM,SD,RR): generates a random number from a gaussian distribution with mean MM, and standard deviation SD . returns RR : 
+tmp2 = sd*sqrt( -2.d0*log(tmp1)/tmp1 )
+        RR =        zeta(1)*tmp2 + MM 
+where zeta(i) = 2.0*(rand-0.5), tmp1 = zeta(1)*zeta(1) + zeta(2)*zeta(2). and 0<tmp1<1
+
+# T.f  
+contains findtemp(KE) that finds the temperature of the system ,contains lines which remove angular and center of mass moment
+to avoid that the system rotates or moves. returns KE.
+
+first calculate momentum for dynamic atoms:
+
+			Px(i) = Vx(i)*ms(i)
+			Py(i) = Vy(i)*ms(i)
+			Pz(i) = Vz(i)*ms(i)
+
+Avoid reseting the center of mass to zero if there are static atoms. If not the total linear momentum:
+pxsum=0.0, pysum=0.0, pzsum=0.0,  Mass = 0.0
+for every dynamic atom i : pxsum = Px(i) + pxsum,pysum = Py(i) + pysum,pzsum = Pz(i) + pzsum,Mass = Mass + ms(i)
+Then find the average linear momentum: pxsum = pxsum/Mass,pysum = pysum/Mass,pzsum = pzsum/Mass
+Then bring the center of mass linear momentum to zero:
+Px(i) = Px(i) - pxsum*ms(i),  Py(i) = Py(i) - pysum*ms(i), Pz(i) = Pz(i) - pzsum*ms(i), 
+VX(i) = PX(i)/ms(i)        ,  VY(i) = PY(i)/ms(i)        , VZ(i) = PZ(i)/ms(i)
+Following that, to remove the angular momentum, first center the molecule about the origin:
+LX = 0.0,  LY = 0.0,  LZ = 0.0,        IXY = 0.0,  IYZ = 0.0,  IXZ = 0.0,           CMX = 0.0,  CMY = 0.0,  CMZ = 0.0,
+
+for avery dynamic i: CMX = CMX + X(i)*ms(i), CMY = CMY + Y(i)*ms(i), CMZ = CMZ + Z(i)*ms(i)
+after loop ends remember to divide:         CMX = CMX/Mass,  CMY = CMY/Mass,   CMZ = CMZ/Mass
+
+For every dyamic i: X(i) = X(i) - CMX , Y(i) = Y(i) - CMY,  Z(i) = Z(i) - CMZ
+Calculate angular momentum: 
+LX = LX + Y(i)*PZ(i)-Z(i)*PY(i),        LY = LY + PX(i)*Z(i)-X(i)*PZ(i),        LZ = LZ + X(i)*PY(i)-Y(i)*PX(i)
+IXY = IXY + ms(i)*(X(i)** 2 + Y(i) ** 2), 	IXZ = IXZ + ms(i)*(X(i)** 2 + Z(i)** 2),  IYZ = IYZ + ms(i)*(Y(i)** 2 + Z(i)** 2)
+Then calculate: WX = LX/IYZ, WY = LY/IXZ, WZ = LZ/IXY
+finally for every dynamic i substract L:
+Vx(i) = VX(i) + WZ*Y(i) - WY*Z(i),  VY(i) = VY(i) - X(i)*WZ + WX*Z(i),	VZ(i) = VZ(i) + X(i)*WY - WX*Y(i),
+PX(i) = VX(i)*ms(i),                PY(i) = VY(i)*ms(i),                PZ(i) = VZ(i)*ms(i)
+
+to sum square momentums firsr initialize: P2=0
+run over dynaic atoms i: P2 =  P2 + (Px(i)** 2 + Py(i)** 2 + Pz(i)** 2)/ms(i)
+Now the temp of the system in reduced units:
+temp = P2/((numDyn-2)*3) ! numDyn = number of dynamic atoms (or i iterations)
+returning the kinetic energy(0.5p^2): KE = P2/2.0
+
+
+# ThreeBody.f
+contains subroutine ThreeBodyInit determines all of the possible three-body interactions in the system  
+?? writing
+subroutine ThreeBody(Qn,Qi) computes the number of three body interactions in the system
+
+
+# angl.f
+ ANGL  computes the Force due to the bond angles, returns the energy related to the bonds. This code is taken from AMBER, and modified :
+ SUBROUTINE ANGL(E):
+C for multiple line comment
+C  ROUTINE TO GET THE ANGLE ENERGIES AND FORCES FOR THE
+C           POTENTIAL OF THE TYPE CT*(T-T0)** 2
+First get angles (insertion):
+		DO JN = 1, nTA
+		    I3 = IT(JN)
+		    J3 = JT(JN)
+		    K3 = KT(JN)
+		    XIJ(JN) = X(I3)-X(J3)
+		    YIJ(JN) = Y(I3)-Y(J3)
+		    ZIJ(JN) = Z(I3)-Z(J3)
+		    XKJ(JN) = X(K3)-X(J3)
+		    YKJ(JN) = Y(K3)-Y(J3)
+		    ZKJ(JN) = Z(K3)-Z(J3)
+		END DO
+Then for every JN:
+	    RIJ0 = XIJ(JN)*XIJ(JN)+YIJ(JN)*YIJ(JN)+ZIJ(JN)*ZIJ(JN) ! sum of squares along x,y,z to distace of IJ group
+            RKJ0 = XKJ(JN)*XKJ(JN)+YKJ(JN)*YKJ(JN)+ZKJ(JN)*ZKJ(JN) ! KJ distance
+            RIK0 = SQRT(RIJ0*RKJ0) ! IK distance
+            CT0 = (XIJ(JN)*XKJ(JN)+YIJ(JN)*YKJ(JN)+ZIJ(JN)*ZKJ(JN))/RIK0
+            CT1 = MAX(-pt999,CT0)
+            CT2 = MIN(pt999,CT1)
+            CST(JN) = CT2
+            ANT(JN) = ACOS(CT2)
+            RIJ(JN) = RIJ0
+            RKJ(JN) = RKJ0
+            RIK(JN) = RIK0
+	    
+Then calculating the energy:
+
+	DO JN = 1,nTA
+            ANT0 = ANT(JN)
+            DA = ANT0 - ANTC(JN)
+            DF = TK(JN)*DA
+            DFW(JN) = -(DF+DF)/SIN(ANT0)
+          END DO
+
+calculating the force:
+
+	DO JN = 1,nTA
+            I3 = IT(JN)
+            J3 = JT(JN)
+            K3 = KT(JN)
+C
+            ST = DFW(JN)
+            STH = ST*CST(JN)
+            CIK = ST/RIK(JN)
+            CII = STH/RIJ(JN)
+            CKK = STH/RKJ(JN)
+            DT1 = CIK*XKJ(JN)-CII*XIJ(JN)
+            DT2 = CIK*YKJ(JN)-CII*YIJ(JN)
+            DT3 = CIK*ZKJ(JN)-CII*ZIJ(JN)
+            DT7 = CIK*XIJ(JN)-CKK*XKJ(JN)
+            DT8 = CIK*YIJ(JN)-CKK*YKJ(JN)
+            DT9 = CIK*ZIJ(JN)-CKK*ZKJ(JN)
+            DT4 = -DT1-DT7
+            DT5 = -DT2-DT8
+            DT6 = -DT3-DT9
+C
+
+            Fx(I3) = Fx(I3)-DT1
+            Fy(I3) = Fy(I3)-DT2
+            Fz(I3) = Fz(I3)-DT3
+            Fx(J3) = Fx(J3)-DT4
+            Fy(J3) = Fy(J3)-DT5
+            Fz(J3) = Fz(J3)-DT6
+            Fx(K3) = Fx(K3)-DT7
+            Fy(K3) = Fy(K3)-DT8
+            Fz(K3) = Fz(K3)-DT9
+
+          END DO
+	  
+The energy: E = 0.0
+E = E + TK(i)*(ANTC(i)- ANT(i))** 2
+E = E/2.0 ! value returned, angles energy! :)
+
+# bonds.f
+Bonds  computes the hookean force between chosen atoms. returns the energy E:
+subroutine Bonds(E)
+run over all number of bonds and assign the first index (Ib1(i)) to I2, and its pair to J2. calculate the difference of x,y,z components for each pair,
+and from that the square distance (sum of squares) . assigning the distance (square root) to r1. 
+	    
+The energy is then calculated by: 
+E = E + bk(i)*(r1-Rb(i))** 2 ! this was used to be saved into file 46??
+
+the index i indicates the interaction between particle i and i+1
+            f = RBC(i)/r1 - bK(i)
+	    
+as dx = X(I2) - X(J2), the force is calculated: Fx(I2) = Fx(I2) + f * dx, note the dx sign to save variables: Fx(J2) = Fx(J2) - f * dx	 
+only at the end:
+E = E/2.0
+(where is end of do???)
+Also including : BONDSP does the same as ANGLP but for the bond lengths; computes RBC for each bond (this computation is done only once) to compute the force: f = RBC(i)/r1 - bK(i) where r1 is the delta from the optimal length. 
+subroutine bondsp: calculate for any bond i: RBC(i) = Rb(i)*bK(i)
+
+# box.c
+creates a square box with dimentions Xmin,Xmax,Ymin,Ymax,Zmin,Zmax. Also updates energy Ebox (pointer):
+F = K*dR
+E = (K*(dR** 2))/2 
+where R is the distance of the penetration of the atom to the wall of the box. Given K  = *Kforce, K2 = K*2 
+For all dynamic atoms:
+
+	if (X[CCCi] < Xmin ){
+			Fx[CCCi]+= -(K2* (X[CCCi] - Xmin));
+			ExBox = K*pow((X[CCCi] - Xmin),2);
+		}
+
+//similarly for X[CCCi]> Xmax, for Y and Z directions too. Finally add contributions: *Ebox += ExBox + EyBox + EzBox
+
+# chiral (not of use to me)
+chiral computes the relative distance of the Cbeta bead from chirality and the resulting force to applied on the bead. Returns related energy E.
+
+# coulomb.c
+calculates the electrostatic energy term given the dielectric constant (epsilon):
+running the electortatic atoms:
+calculating the spatial distance between pairs -r ,The force numerator: K2 = K*Q1Q2[i]/epsilon. And the energy: *Eelec+= K2/r.
+To calculate the forces in x,y,z directions, use force in the direction C1 to C2 ,devided by r:
+F_over_r = K2/(r2*r) so that Fx[C1]+=  F_over_r*dx;   Fx[C2]-=  F_over_r*dx;
+Also includes: coulombfactor function that updates esEnergy: given K = 332.0 (???)
+*esEnergy = K/((*deConstant)*(sqrt(*sigma)));
+
+# debyehuckel.c
+
+# dhenergytable.c
+
+# distances.f
+
+
+# dynamicRange.f
+
+# improper.f
+
+# IjM.f
+
+# phi.f
+
+# rep.f
+
+# repEllipsoid.f (not of my use)
+NonContacts computes the forces due to non native contacts
+
+# sym.f
+includes IntSymp() : integrates over one time step for all particles  .
+subroutine intsymp(E,ET, Conts, outE, count ) ! again E is total potential energy , ET is total includig kinetic+potential
+for i=1:9 initialize: DumE(i)=0.0. Then call for calculations:
+call Fstart, call Bonds( DumE(1)), call ANGL(DumE(2)), call dihedral(DumE(3)), call contacts(DumE(4), Conts, count, outE), call NonContacts( DumE(5)), optional:
+call box(X,Y,Z,Fx,Fy,Fz ,DynamicAtomRange, DynLength,DumE(6),boxMin,boxMax,boxCoeff), chiral(DumE(8)), ellipsoidRepulsions(DumE(9))
+for electorstatics either debye-huckel or coloumb: 
+debyehuckel(useESCutoff,useDHTable,esFirstAtomIndex,esSecondAtomIndex,esCharge,X,Y,Z,Fx,Fy,Fz,esPairsNum,
+,esDistanceCutoff,DumE(7),deConstant,screeningFactor,saltCoefficient,DebyeHuckelPotentials,DebyeHuckelForces)
+
+Call Findtemp(DumKE) ! returns the kinetic energy into DumKE
+      ET = E + DumKE
+      
+if(outE .eq. 0)then
+         E = DumE(1) + DumE(2) + DumE(3) +  DumE(4) + DumE(5) + DumE(6) + DumE(7) + DumE(8) + DumE(9)
+then update energy terms to file 70. 	 
+Thermostat:
+      RsBy =sqrt( 1+(T/temp-1)*tau/Rstau )   ! ( RsBy = 1.0 turns off thermostat)
+Then:
+
+			Vx(i) = (Vx(i) + tau*Fx(i)/ms(i))*RsBy
+			Vy(i) = (Vy(i) + tau*Fy(i)/ms(i))*RsBy
+			Vz(i) = (Vz(i) + tau*Fz(i)/ms(i))*RsBy
+	! displacements of particle i
+			X(i) = X(i) + tau*Vx(i)
+			Y(i) = Y(i) + tau*Vy(i)
+			Z(i) = Z(i) + tau*Vz(i)		
+		
+      
+# tripleproduct.f
