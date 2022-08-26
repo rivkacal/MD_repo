@@ -10,8 +10,8 @@ This file describes all the calculations performed in each file seperately, stra
 - 12 is ContactFile  | appears in ss.f,ThreeBody.f (writes)
 - 13 is ThreeBodyFile |	appears in ss.f,ThreeBody.f (writes)
 - 14 is writeAllContacts (optional) | appears in ss.f,
-- 15 is ContactRangesTwoBodyFile (optional if above is set 'YES') | appears in ss.f,
-- 16 is ContactRangesEnergyFile | appears in ss.f,
+- 15 is ContactRangesTwoBodyFile (optional if above is set 'YES') | appears in ss.f,IjM.f
+- 16 is ContactRangesEnergyFile | appears in ss.f, IjM.f
 - 17 is ContactRangesFile | appears in init.f (open, close)
 - 25 is initval file (dynamic range) | appears in init.f (open,close),
 - 30 is conf (input.dat) | appears in init.f
@@ -25,6 +25,7 @@ This file describes all the calculations performed in each file seperately, stra
 - 71 ???? holds temperature? | appears in ss.f (closed),
 - 91 is 'time.dat' (time for all simulation) | appears in int.f
 - 93 is TrajDist file |	appears in ss.f,int.f
+- 98 is ?? dihedrals staff | appears in phi.f
 - 99 is EnergyTot | appears in ss.f,int.f (integrate)
 - 999 is 'timeleft.dat' (remaining for aimulation after first integartion) | appears in int.f (opens, closed)
 
@@ -84,39 +85,40 @@ Contains the following functions:
  - start:
   reads settings from settings.dat (60) created perviously, random variables and creates outputs:
   
-      skips the first two meaningless lines and then:
-      reads initial conditions format (1||2||3) into startt (integer type)
-      reads the input file (here: fragB_helix_translated_updated.dat) into Conf
-      reads initial coordinates/velocities from that line (leftest) input file (fragB_helix_translated_updated.dat) into initval,
-          simultaneously Final_fragB_helix_translated_updated_0.5_39753.dat is read into finalpx1 (final conformation)
-      reads outputfile name (say fragB_helix_translated_updated_0.5_39753.log) into output variable
-      **reads trajectory file name (say Traj_fragB_helix_translated_updated_0.5_39753.dat) into Trajectory variable,
-      and the output frequency into WOT (write 1 step every WOT (say 1000 writing output trajectory) steps (that's 1 every 1000 skipping 999 steps )**
-      if choosing to store Trajectorries : open a Trajectory file and call it 6.
-      if choose to store trajectory distance : open TrajDist file and call it 93.
-      keeps reading energy total file name (Etotal_fragB_helix_translated_updated_0.5_39753.dat) into EnergyTot,
-        EbyType_fragB_helix_translated_updated_0.5_39753.dat file name into EnergyTerm. If they have values other than 'NO' string then:
-      open EnergyTot file (name) as 99, open EnergyTerm as 70. Similarly reading 2body and 3body contact filenames into ContactFile (12), 
-        and ThreeBodyFile (13)
-      **reads writeAllContacts, only if not specified 'NO' inMDWrapper.prefs it'll open a writeAllContacts as 14**
-      **then it reads the ranges to write 2body and EIj if above is specifies as 'YES', into writeContactsRanges
-      open ContactRangesTwoBodyFile as 15, ContactRangesEnergyFile into 16**
-      reads Temperature file name and open TemperatureVtime as 53. 
-      reads model type of execution into symtype (MD/LD) if LD then read also gamma (drag coefficient for bath coupling)
-      reads the number of steps into stepstop and the measurements frequency into WO (writing output). 
-      reads time step into tau (0.005, 200 steps is?), read coupling constant for Berendsen thermostat into RsTau (0.20000 rescaled by tau)
-      reads temperature in reduced units (0-1 to fraction of "room temperature") into T.
-      reads wether static atoms option was chosen; if so, call genDynRange(DynLength,DynamicStr,DynamicAtomRange) for dynamic range (???)
-      reads wether to confine in a box: if 'YES' write values of boxMin(i),boxMax(i) where i={1,2,3}, and the box force coefficent into boxCoeff.
-      reads wether to apply columbic interactions into useElectrostatics, if 'YES' read the dielectric constant (eps_0 units) into deConstant;
-           minimum index difference between beads to apply electrostatics (say 3 indices apart) into esMinBeadDistance; 
-           type of cutoff for electrostatic interaction into esCutoffType. If the latter is 'ENERGY'
-           then read the maximum fraction of energy for electrostatic interaction into esEnergyCutoff, similar for 'DISTANCE' type.
-      reads whether to fix potential of electrostaic contacts ('ATTRACTION') into compensateElectrostaticContacts. 
-      reads wether to use debye huckel in execution into useDebyeHuckel, and then wether to use precalculated energy and force values into useDHTable.
-      reads into ionicStrength, ionicRadius (the average radius of the ions in the solution (for example 1.4 for NaCl)), solventDensity (1 for water)
-      after that calling initES to initiate electrostatics, as described later.
-      reads  whether to use chirals in execution into useChirals, whether to use ellipsoid repulsions in execution into useEllipsoidRepulsions.
+  
+	      skips the first two meaningless lines and then:
+	      reads initial conditions format (1||2||3) into startt (integer type)
+	      reads the input file (here: fragB_helix_translated_updated.dat) into Conf
+	      reads initial coordinates/velocities from that line (leftest) input file (fragB_helix_translated_updated.dat) into initval,
+		  simultaneously Final_fragB_helix_translated_updated_0.5_39753.dat is read into finalpx1 (final conformation)
+	      reads outputfile name (say fragB_helix_translated_updated_0.5_39753.log) into output variable
+	      **reads trajectory file name (say Traj_fragB_helix_translated_updated_0.5_39753.dat) into Trajectory variable,
+	      and the output frequency into WOT (write 1 step every WOT (say 1000 writing output trajectory) steps (that's 1 every 1000 skipping 999 steps )**
+	      if choosing to store Trajectorries : open a Trajectory file and call it 6.
+	      if choose to store trajectory distance : open TrajDist file and call it 93.
+	      keeps reading energy total file name (Etotal_fragB_helix_translated_updated_0.5_39753.dat) into EnergyTot,
+		EbyType_fragB_helix_translated_updated_0.5_39753.dat file name into EnergyTerm. If they have values other than 'NO' string then:
+	      open EnergyTot file (name) as 99, open EnergyTerm as 70. Similarly reading 2body and 3body contact filenames into ContactFile (12), 
+		and ThreeBodyFile (13)
+	      **reads writeAllContacts, only if not specified 'NO' inMDWrapper.prefs it'll open a writeAllContacts as 14**
+	      **then it reads the ranges to write 2body and EIj if above is specifies as 'YES', into writeContactsRanges
+	      open ContactRangesTwoBodyFile as 15, ContactRangesEnergyFile into 16**
+	      reads Temperature file name and open TemperatureVtime as 53. 
+	      reads model type of execution into symtype (MD/LD) if LD then read also gamma (drag coefficient for bath coupling)
+	      reads the number of steps into stepstop and the measurements frequency into WO (writing output). 
+	      reads time step into tau (0.005, 200 steps is?), read coupling constant for Berendsen thermostat into RsTau (0.20000 rescaled by tau)
+	      reads temperature in reduced units (0-1 to fraction of "room temperature") into T.
+	      reads wether static atoms option was chosen; if so, call genDynRange(DynLength,DynamicStr,DynamicAtomRange) for dynamic range (???)
+	      reads wether to confine in a box: if 'YES' write values of boxMin(i),boxMax(i) where i={1,2,3}, and the box force coefficent into boxCoeff.
+	      reads wether to apply columbic interactions into useElectrostatics, if 'YES' read the dielectric constant (eps_0 units) into deConstant;
+		   minimum index difference between beads to apply electrostatics (say 3 indices apart) into esMinBeadDistance; 
+		   type of cutoff for electrostatic interaction into esCutoffType. If the latter is 'ENERGY'
+		   then read the maximum fraction of energy for electrostatic interaction into esEnergyCutoff, similar for 'DISTANCE' type.
+	      reads whether to fix potential of electrostaic contacts ('ATTRACTION') into compensateElectrostaticContacts. 
+	      reads wether to use debye huckel in execution into useDebyeHuckel, and then wether to use precalculated energy and force values into useDHTable.
+	      reads into ionicStrength, ionicRadius (the average radius of the ions in the solution (for example 1.4 for NaCl)), solventDensity (1 for water)
+	      after that calling initES to initiate electrostatics, as described later.
+	      reads  whether to use chirals in execution into useChirals, whether to use ellipsoid repulsions in execution into useEllipsoidRepulsions.
       
       opens 'random.dat' file as 63 xrandom,yrandom,zrandom from it, then closes it. 
       
@@ -462,6 +464,7 @@ C for multiple line comment
 C  ROUTINE TO GET THE ANGLE ENERGIES AND FORCES FOR THE
 C           POTENTIAL OF THE TYPE CT*(T-T0)** 2
 First get angles (insertion):
+
 		DO JN = 1, nTA
 		    I3 = IT(JN)
 		    J3 = JT(JN)
@@ -497,38 +500,38 @@ Then calculating the energy:
 
 calculating the force:
 
-	DO JN = 1,nTA
-            I3 = IT(JN)
-            J3 = JT(JN)
-            K3 = KT(JN)
-C
-            ST = DFW(JN)
-            STH = ST*CST(JN)
-            CIK = ST/RIK(JN)
-            CII = STH/RIJ(JN)
-            CKK = STH/RKJ(JN)
-            DT1 = CIK*XKJ(JN)-CII*XIJ(JN)
-            DT2 = CIK*YKJ(JN)-CII*YIJ(JN)
-            DT3 = CIK*ZKJ(JN)-CII*ZIJ(JN)
-            DT7 = CIK*XIJ(JN)-CKK*XKJ(JN)
-            DT8 = CIK*YIJ(JN)-CKK*YKJ(JN)
-            DT9 = CIK*ZIJ(JN)-CKK*ZKJ(JN)
-            DT4 = -DT1-DT7
-            DT5 = -DT2-DT8
-            DT6 = -DT3-DT9
-C
+		DO JN = 1,nTA
+		    I3 = IT(JN)
+		    J3 = JT(JN)
+		    K3 = KT(JN)
+	C
+		    ST = DFW(JN)
+		    STH = ST*CST(JN)
+		    CIK = ST/RIK(JN)
+		    CII = STH/RIJ(JN)
+		    CKK = STH/RKJ(JN)
+		    DT1 = CIK*XKJ(JN)-CII*XIJ(JN)
+		    DT2 = CIK*YKJ(JN)-CII*YIJ(JN)
+		    DT3 = CIK*ZKJ(JN)-CII*ZIJ(JN)
+		    DT7 = CIK*XIJ(JN)-CKK*XKJ(JN)
+		    DT8 = CIK*YIJ(JN)-CKK*YKJ(JN)
+		    DT9 = CIK*ZIJ(JN)-CKK*ZKJ(JN)
+		    DT4 = -DT1-DT7
+		    DT5 = -DT2-DT8
+		    DT6 = -DT3-DT9
+	C
 
-            Fx(I3) = Fx(I3)-DT1
-            Fy(I3) = Fy(I3)-DT2
-            Fz(I3) = Fz(I3)-DT3
-            Fx(J3) = Fx(J3)-DT4
-            Fy(J3) = Fy(J3)-DT5
-            Fz(J3) = Fz(J3)-DT6
-            Fx(K3) = Fx(K3)-DT7
-            Fy(K3) = Fy(K3)-DT8
-            Fz(K3) = Fz(K3)-DT9
+		    Fx(I3) = Fx(I3)-DT1
+		    Fy(I3) = Fy(I3)-DT2
+		    Fz(I3) = Fz(I3)-DT3
+		    Fx(J3) = Fx(J3)-DT4
+		    Fy(J3) = Fy(J3)-DT5
+		    Fz(J3) = Fz(J3)-DT6
+		    Fx(K3) = Fx(K3)-DT7
+		    Fy(K3) = Fy(K3)-DT8
+		    Fz(K3) = Fz(K3)-DT9
 
-          END DO
+		  END DO
 	  
 The energy: E = 0.0
 E = E + TK(i)*(ANTC(i)- ANT(i))** 2
@@ -580,21 +583,92 @@ Also includes: coulombfactor function that updates esEnergy: given K = 332.0 (??
 *esEnergy = K/((*deConstant)*(sqrt(*sigma)));
 
 # debyehuckel.c
+returns electoristatic energy term if use debye-huckel flas is 'YES'. 
+debyehuckel function fisrt calculates the distance between electorostatic beads r . If r2 (squared) < 10 printf ("*****************\n") and the
+beads indices and distance. Otherwise, calculates the debye-huckel potential using the dhenergytable functions with the given distance.
+Then calculates the force in the direction C1 to C2 ,devided by r (is used to compute forces in x,y,z directions)
+Also calculates the electorstatic force: Fx[C1]+=  F_over_r*dx;       Fx[C2]-=  F_over_r*dx; so on for y, z...
+debyehuckelfactor function updates esEnergy:
+*esEnergy = K*(*saltCoefficient)*exp(-(*screeningFactor)*(sqrt(*sigma)))/((*deConstant)*(sqrt(*sigma)))
 
 # dhenergytable.c
+this script generates array of debye-huckel potential in an intervals of r^2.
+contains dhenergytable . This function gets a distance (squared) and returns :
+DebyeHuckelPotentials[i]= K*(*saltCoefficient)*exp(-(*screeningFactor)*(Dist))/((*deConstant)*(Dist))
+DebyeHuckelForces_over_r[i]=DebyeHuckelPotentials[i]*(1/DistanceSquared + *screeningFactor/Dist)
+for many intervals of distances up to a cutoff.
 
 # distances.f
-
+Distances calculate the distance between any two beads: dx = X(i) - X(j) etc.. then write(93,*) dx** 2+dy** 2+dz** 2 where 93 is TrajDist.
 
 # dynamicRange.f
+contains genDynRange(DynLength,DynamicStr,DynamicAtomRange): creates DynamicAtomRange array to be used. 
+function isDyn(DynamicAtomRange,DynLength,AtomNum): runs over all atoms returning 1 (true) for dynamic atoms, 0 otherwise.
+function numDynAtom(DynamicAtomRange,DynLength): calculates the number of dynamic atoms
 
 # improper.f
 
 # IjM.f
+CONTACTS: computes the force on all atoms due to contacts via a 10-12 potential 
+***subroutine contacts(E, Conts, count, outE)***
 
-# phi.f
+		if (writeContactsRanges .eq. 'YES') then
+			do i=1, rangesNumber
+			  currentRangesIndex(i) = 1
+			  EtotalRanges(i) = 0.0
+			  TwoBodyRanges(i) = 0
+			end do
+		      end if
+
+runs over all contacts and assigns indices to C1 = IC(i)    C2 = JC(i). Calculate square distance between each pair as r2. rm10=(sigma/r^2)^2 where sigma is already distance squared (user input in .dat). Stores the current energy value currentEnergy=epsC(i)*rm10*(5*rm2-6).
+calculate E=E+currentEnergy and then  f_over_r = epsC(i)*rm10*(rm2-1)*60/r2.
+If the distance is lower the contacts upper threshold then define isContact as true (1) .
+
+	 if ((writeAllContacts.eq.'YES').and.(outE.eq.0))then	
+		   write(14,*) isContact
+		 endif
+		 
+	if (writeContactsRanges .eq. 'YES') then
+		  do j=1, rangesNumber
+		    currentContactInRange = 
+	     Q      rangeContacts(j,currentRangesIndex(j))
+		    if (i .eq. currentContactInRange) then
+		      EtotalRanges(j)=EtotalRanges(j)+currentEnergy
+		      TwoBodyRanges(j)=TwoBodyRanges(j)+isContact
+		      currentRangesIndex(j)=currentRangesIndex(j)+1
+		    end if 
+		  end do	
+		end if
+	! then calculate Fx, Fy etc using f_over_r
+	
+	      if ((writeContactsRanges .eq. 'YES').and.(outE.eq.0)) then
+		do j=1, rangesNumber
+		  write (15,'(I5)') TwoBodyRanges(j)
+		  write (16,'(F9.2)') EtotalRanges(j)
+		end do
+		write (15,*) ''
+		write (16,*) ''
+	      end if
+	      end
+
+# phi.f (irrelevant for my IDPs use...)
+dihedral computes the dihedral angles and the forces due to them .
+
 
 # rep.f
+NonContacts computes the forces due to non native contacts. 
+subroutine noncontacts(E):  go over the NCset which is a subset of all the non-native contacts
+the subset includs all non-native contacts that may be below the
+repultion distance in this iteration. Calculates repulsive part:  E = E + NNCSigma(tt)*rm14*r2 . calculate forces and returns E = E/12.
+Also:
+!* NonContactsNear computes the non-native contacts to be used for the*
+!* next NCnear steps                                                  *
+!*                                                                    *
+!* every 50 steps this subroutine is called                           *
+!* it checks each non-native contact,                                 *
+!*if the contact length < 9*repultion_distance, it is inseted into the*
+!*to check list (I guess the probabilty of an atom traveling          *
+!*8*repultion_distance in 50 steps is very low )
 
 # repEllipsoid.f (not of my use)
 NonContacts computes the forces due to non native contacts
@@ -628,4 +702,5 @@ Then:
 			Z(i) = Z(i) + tau*Vz(i)		
 		
       
-# tripleproduct.f
+# tripleproduct.f (not of interest in my IDPs studies)
+ computes the improper dihedral (using triple product) 
