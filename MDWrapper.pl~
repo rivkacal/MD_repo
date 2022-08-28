@@ -20,7 +20,7 @@ my $minimumEsDistanceByModelType = { "CA_NO" => 4,
                                    };
 
 my ($scriptDirectory) = $0 =~ m/(.*\/)/g;
-my $utilDirectory = "/home/arielaz/scripts/util/";
+my $utilDirectory = "/home_d/rivka/scripts/util/";
 
 my $mdWrapperSchemaFileName = $scriptDirectory."/MDWrapper.prefs.schema";
 my $mdWrapperPrefsFileName = "./MDWrapper.prefs";
@@ -158,6 +158,9 @@ sub createSettingsFile
   print SETTINGS_FILE_HANDLE ", Final_".$executionUID.".dat";
   print SETTINGS_FILE_HANDLE " : initial coordinates/velocities, final conformation\n";
   print SETTINGS_FILE_HANDLE $executionUID.".log : log file for current execution\n";
+  print SETTINGS_FILE_HANDLE $executionPreferencesRef->{"OUTPUT_MINIMALIST_TRAJ"};
+  print SETTINGS_FILE_HANDLE " : Whether to output minimalists Traj file (xyz only)\n";
+
   if ($executionPreferencesRef->{"STORE_TRAJECTORIES"} =~ m/YES/i)
   {
     print SETTINGS_FILE_HANDLE "Traj_".$executionUID.".dat, ".$executionPreferencesRef->{"TRAJECTORY_OUTPUT_FREQUENCY"};
@@ -492,7 +495,7 @@ sub launchExecution
             chomp($myJobs = `qstat | grep " $id " | wc -l`);#### 3.1 ###
         }
       }
-      open(MDW_LOCK_FILE_HANDLE,"/home/arielaz/scripts/MDWrapper/MDW.lock") or die "can't open the lock file: $!";
+      open(MDW_LOCK_FILE_HANDLE,"/home/rivka/scripts/MDW.lock") or die "can't open the lock file: $!";
       flock(MDW_LOCK_FILE_HANDLE, 2) or die "can't lock the MDW lock file: $!";
       `cp $cshScript  $path/input/$cshScript`;
       open (PIPE, "|qsub $cshScript") or die "Couldn't execute the csh script: $!\n";

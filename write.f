@@ -11,6 +11,11 @@
       include 'MD.com'
       integer filei
       character(LEN=20) filename
+      ! addition of new formatting for trajectory xyz output as made by Lena
+      character(LEN = 15) traj_fmt
+      character(LEN=15) traj_fmt_min
+      parameter(traj_fmt="(3F8.3)")
+      parameter(traj_fmt_min="(3F12.3)")
       real res
       dimension Res(AN)
 
@@ -37,7 +42,9 @@
         write(61,*) '# X(i)', 'Y(i)', 'Z(i)'
 
         if(Trajectory .ne. 'NO')then
-        write(6,*) writecount
+          if(minTrajOut .ne. 'YES')then
+             write(6,*) writecount
+          endif
 	endif
 
       do  i=1, AN
@@ -48,8 +55,12 @@
 
       do  i=1, AN
         if(Trajectory .ne. 'NO')then
-      write(6,list) X(i), Y(i), Z(i)
-	endif
+          if(minTrajOut .ne. 'YES') then
+              write(6,traj_fmt) X(i), Y(i), Z(i)
+	else
+              write(6,traj_fmt_min) X(i), Y(i), Z(i)
+          endif
+        endif
       end do
 
         do i=1, AN

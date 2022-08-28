@@ -20,8 +20,11 @@
 	call CPU_Time(t1)
 
         if(Trajectory .ne. 'NO')then
-        write(6,*) AN
-	endif
+          if(minTrajOut .ne. 'YES') then
+             write(6,*) AN
+          endif
+                endif
+
         writecount = 0
         writeout = WO
         writeoutT = WOT
@@ -91,7 +94,7 @@
 	      call distances()
             endif
           end if
-
+          if(minTrajOut .ne. 'YES') then
             if(stepstop-step .ge. WOT)then
 
             write(6,*) 'continue'
@@ -100,7 +103,9 @@
             write(6,*) 'end'
 
             endif
+          endif
         endif
+        
             writeoutT = writeoutT + WOT
 
           endif

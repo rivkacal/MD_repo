@@ -352,7 +352,9 @@
 
          MDT = MDT1
         if(Trajectory .ne. 'NO')then
-         write(6,*) MDT
+          if(minTrajOut .ne. 'YES')then
+                 write(6,*) MDT
+          endif
 	endif
 
          do i=1,MDT
@@ -369,7 +371,11 @@
              ChainLength(i) = cl1
 
         if(Trajectory .ne. 'NO')then
-             write(6,*) chainlength(i)
+                if(minTrajOut .ne. 'YES') then
+                  write(6,*) chainlength(i), WO, WOT
+                else
+                  write(6,*) WOT
+                endif
 	endif
          enddo
 
@@ -388,7 +394,9 @@
 	ChainIndex(i) = currentChainIndex
 	
         if(Trajectory .ne. 'NO')then
-      write(6,'(I4,A4,A3)') BeadIndex(i),AtType(i), ResID(i)
+                if(minTrajOut .ne. 'YES')then
+                  write(6,'(I4,A4,A3)') BeadIndex(i),AtType(i), ResID(i)
+                endif
 	endif
         enddo
 

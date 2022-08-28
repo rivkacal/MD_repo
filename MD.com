@@ -32,12 +32,13 @@
      Q KEtimes
 
        integer writecount
-	character(LEN = 15) list,list1, list2
+	character(LEN = 15) list,list1,list2
 	parameter(list="(3F8.3,F6.2)")
 	parameter(list1="(I5,4F8.3)")
 	parameter(list2="(I5,3F8.3)")
        real  X, Y, Z, ms, Vx, Vy, Vz,
      Q Fx, Fy, Fz
+
 
 ! This limits the size of the simulation.
        parameter (Nmax=20000)
@@ -217,7 +218,8 @@
      Q                    useEllipsoidRepulsions, esCutoffType,
      Q                    compensateElectrostaticContacts,
      Q			  writeAllContacts, useDHEnergyTable,
-     Q			  writeContactsRanges
+     Q			  writeContactsRanges,
+     Q			  minTrajOut 
 
 
 ! addtional parameters, used only if conditional flag is set 
@@ -238,7 +240,7 @@
      Q useEllipsoidRepulsions, TrajDist, esCutoffType, 
      Q writeAllContacts, allContactsFile,useDHEnergyTable,
      Q writeContactsRanges,ContactRangesFile, ContactRangesTwoBodyFile,
-     Q ContactRangesEnergyFile 
+     Q ContactRangesEnergyFile, minTrajOut 
 
        COMMON /real/ X, Y, Z, ms, Vx,
      Q Vy, Vz, Fx, Fy, Fz,rand, temprand, xrandom, yrandom, zrandom,
