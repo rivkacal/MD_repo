@@ -61,7 +61,9 @@
 
           if(Edum .eq. 0)then
 ! Find and return the Three-body interactions
-	!  call ThreeBody(conts, count)
+        if (useThreeBody .ne. 'NO')then
+	  call ThreeBody(conts, count)
+        endif
         if(EnergyTot .ne. 'NO')then
 	  write(99,*) E
 	endif

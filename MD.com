@@ -218,7 +218,7 @@
      Q                    useEllipsoidRepulsions, esCutoffType,
      Q                    compensateElectrostaticContacts,
      Q			  writeAllContacts, useDHEnergyTable,
-     Q			  writeContactsRanges, minTrajOut 
+     Q			  writeContactsRanges, minTrajOut, useThreeBody 
 
 
 ! addtional parameters, used only if conditional flag is set 
@@ -239,7 +239,7 @@
      Q useEllipsoidRepulsions, TrajDist, esCutoffType, 
      Q writeAllContacts, allContactsFile,useDHEnergyTable,
      Q writeContactsRanges,ContactRangesFile, ContactRangesTwoBodyFile,
-     Q ContactRangesEnergyFile, minTrajOut 
+     Q ContactRangesEnergyFile, minTrajOut, useThreeBody 
 
        COMMON /real/ X, Y, Z, ms, Vx,
      Q Vy, Vz, Fx, Fy, Fz,rand, temprand, xrandom, yrandom, zrandom,

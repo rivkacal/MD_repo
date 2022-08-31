@@ -30,6 +30,7 @@
 ! information besides the x y z positions. Basically you will get a large
 ! chunk of data comprised of three columns and the total number of beads as
 ! the header
+      read(60,*) useThreeBody ! wether to call Three body interactions 
       read(60,*) Trajectory, WOT ! Trajectory is the trajectory file name
                                  ! write out trajectory every WOT steps
 	if(Trajectory .ne. 'NO')then

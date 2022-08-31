@@ -182,7 +182,8 @@ sub createSettingsFile
   print SETTINGS_FILE_HANDLE ", Final_".$executionUID.".dat";
   print SETTINGS_FILE_HANDLE " : initial coordinates/velocities, final conformation\n";
   print SETTINGS_FILE_HANDLE $executionUID.".log : log file for current execution\n";
-  print SETTINGS_FILE_HANDLE $executionPreferencesRef->{"OUTPUT_MINIMALIST_TRAJ"}." : whether to output minimalists Traj file (xyz only)\n"; 
+  print SETTINGS_FILE_HANDLE $executionPreferencesRef->{"OUTPUT_MINIMALIST_TRAJ"}." : whether to output minimalists Traj file (xyz only)\n";
+  print SETTINGS_FILE_HANDLE $executionPreferencesRef->{"USE_THREE_BODY"}." : whether to calculate three body interaction\n"; 
 
 
   if ($executionPreferencesRef->{"STORE_TRAJECTORIES"} =~ m/YES/i)
