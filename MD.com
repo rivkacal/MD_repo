@@ -62,7 +62,7 @@
 	dimension AtType(Nmax)
 	dimension ResID(Nmax)
 	integer CLmax
-	parameter (clmax = 14)
+	parameter (clmax = 10)
 	integer ChainLength
 	dimension ChainLength(ClMax)
 
@@ -218,8 +218,7 @@
      Q                    useEllipsoidRepulsions, esCutoffType,
      Q                    compensateElectrostaticContacts,
      Q			  writeAllContacts, useDHEnergyTable,
-     Q			  writeContactsRanges,
-     Q			  minTrajOut 
+     Q			  writeContactsRanges, minTrajOut 
 
 
 ! addtional parameters, used only if conditional flag is set 

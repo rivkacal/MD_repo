@@ -54,13 +54,13 @@
 
 
       do  i=1, AN
-        if(Trajectory .ne. 'NO')then
-          if(minTrajOut .ne. 'YES') then
-              write(6,traj_fmt) X(i), Y(i), Z(i)
-	else
-              write(6,traj_fmt_min) X(i), Y(i), Z(i)
-          endif
-        endif
+      if(Trajectory .ne. 'NO')then
+         if(minTrajOut .ne. 'YES') then
+            write(6,traj_fmt) X(i), Y(i), Z(i)
+         else
+            write(6,traj_fmt_min) X(i), Y(i), Z(i)
+         endif
+      endif
       end do
 
         do i=1, AN

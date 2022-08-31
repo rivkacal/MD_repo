@@ -36,7 +36,7 @@
         FMTP="(5I5,2F8.3)"
         FMTI="(5I5,2F8.3)"
         FMTC="(5I5,4F8.3)"
-        CA="(I5,2I5,F10.3,F9.6)"
+        CA="(3I5,F10.3,F9.6)"
         RP="(I8,2I5,2F10.3)"
         ERP="(I8,3I5,2F10.3)"
 	FMTE ="(I8,I5,F10.3)"
@@ -164,7 +164,6 @@
 
 	close(25, status='KEEP')
         endif
-
 ! Read in the contact information
 
 
@@ -272,7 +271,7 @@
 
 ! Find all of the possible Three-body interactions i.e. A-B contact, 
 ! B-C contact and C-A contact
-        !call ThreeBodyInit
+        !call ThreeBodyInit !should be a flag
 
 ! READ REPULSION ! read non-native interactions
         read(30,*) NNC
@@ -371,10 +370,11 @@
              ChainLength(i) = cl1
 
         if(Trajectory .ne. 'NO')then
-                if(minTrajOut .ne. 'YES') then
-                  write(6,*) chainlength(i), WO, WOT
+                if(minTrajOut .ne. 'YES')then
+                  write(6,*) chainlength(i)
                 else
-                  write(6,*) WOT
+                  write(6,"(3I12)") WOT, AN, NC ! output traj first line:
+! output frequency: length (number of beads) number of contacts 
                 endif
 	endif
          enddo
@@ -395,7 +395,7 @@
 	
         if(Trajectory .ne. 'NO')then
                 if(minTrajOut .ne. 'YES')then
-                  write(6,'(I4,A4,A3)') BeadIndex(i),AtType(i), ResID(i)
+                    write(6,'(I4,A4,A3)') BeadIndex(i),AtType(i), ResID(i)
                 endif
 	endif
         enddo

@@ -10,9 +10,8 @@
      Q QQ, SC1, SC2, Tcount, count, step
 	real  taucum, step1, step2, vxsum, vysum, vzsum, ttime, t1, t2,
      Q dummyy, Tsum, Res
-        character(LEN=15) Form
-        dimension Res(AN), count(NC)
-
+      character(LEN=15) Form
+      dimension Res(AN), count(NC)
         writei = 0
         
         form = "(I5,TR1,F12.5)"
@@ -20,11 +19,10 @@
 	call CPU_Time(t1)
 
         if(Trajectory .ne. 'NO')then
-          if(minTrajOut .ne. 'YES') then
+           if(minTrajOut .ne. 'YES')then       
              write(6,*) AN
-          endif
-                endif
-
+           endif
+        endif
         writecount = 0
         writeout = WO
         writeoutT = WOT
@@ -63,7 +61,7 @@
 
           if(Edum .eq. 0)then
 ! Find and return the Three-body interactions
-	  !call ThreeBody(conts, count)
+	!  call ThreeBody(conts, count)
         if(EnergyTot .ne. 'NO')then
 	  write(99,*) E
 	endif
@@ -94,18 +92,17 @@
 	      call distances()
             endif
           end if
-          if(minTrajOut .ne. 'YES') then
+          if(minTrajOut .ne. 'YES')then
             if(stepstop-step .ge. WOT)then
 
             write(6,*) 'continue'
 
-            else
-            write(6,*) 'end'
+             else
+             write(6,*) 'end'
 
+              endif
             endif
-          endif
-        endif
-        
+         endif
             writeoutT = writeoutT + WOT
 
           endif

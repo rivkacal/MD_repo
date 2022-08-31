@@ -78,7 +78,7 @@
 		END IF
 	END DO
 	IF(neg) THEN
-		a2i = a2i * -1
+		a2i = a2i * (-1)
 	END IF
 	return
 	END 
