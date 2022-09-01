@@ -132,7 +132,7 @@
         close(91)
 
 	close(8, status = 'keep')
-        call writetofile(writei) !, Res)
+        ! call writetofile(writei) !, Res)
 
         close(10)
         close(11)

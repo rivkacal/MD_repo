@@ -271,7 +271,9 @@
 
 ! Find all of the possible Three-body interactions i.e. A-B contact, 
 ! B-C contact and C-A contact
-        !call ThreeBodyInit !should be a flag
+        if(useThreeBody .ne. 'NO')then
+          call ThreeBodyInit 
+        endif
 
 ! READ REPULSION ! read non-native interactions
         read(30,*) NNC
