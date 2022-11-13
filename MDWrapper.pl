@@ -21,6 +21,7 @@ my $minimumEsDistanceByModelType = { "CA_NO" => 4,
 
 my ($scriptDirectory) = $0 =~ m/(.*\/)/g;
 my $utilDirectory = "/home_c/arielaz/scripts/util/";
+print "$scriptDirectory";
 
 my $mdWrapperSchemaFileName = $scriptDirectory."/MDWrapper.prefs.schema";
 my $mdWrapperPrefsFileName = "./MDWrapper.prefs";
