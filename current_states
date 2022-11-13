@@ -1,24 +1,33 @@
 
-11/10/2022
+# 11/10/2022
 short day: communication outage + writing research proposal. Also:
 
 coarse-grain:
-*run control experiment for hist_per_test.py experiments (hist_0p5charge_control.py) for trying to assess the effect of fraction of charged histidine and its ordering. The control of hist0p5 files includes the parameters for HIS1 type with a charge of 0.5 to compare the charge effect.
+*run control experiment for hist_per_test.py experiments (hist_0p5charge_control.py) for trying to assess the effect of fraction of charged histidine 
+and its ordering. The control of hist0p5 files includes the parameters for HIS1 type with a charge of 0.5 to compare the charge effect.
   
   -results are in: /trajectories/rivka/his_per_tests_results/his0p5/
   -analysis ran using: ./run_his0p5_analysis.sh after ran ,oved to analysis_scripts
-  -final results: hists_per_tests_fragB_hisEE_his05control.ipynb notebook and check all hists_per_tests_fragB_translated_histdistsEEgrouped/&grouped_control/&even/&even_control 4 files. figures are saved with horizontal line containing the previous only his0.5 results as control. see for instance: uniform_control.png
+  -final results: hists_per_tests_fragB_hisEE_his05control.ipynb notebook
+  and check all hists_per_tests_fragB_translated_histdistsEEgrouped/&grouped_control/&even/&even_control 4 files. 
+  Figures are saved with horizontal line containing the previous only his0.5 results as control. see for instance: uniform_control.png
 
 
-*trying to apply the H++ for known histidine charges of my previous amberff simulations for fragment B. Results for simulation 10ns frame after 500ns previous run with all histidines non-charged for internal dielectric constant of 4 and 10 are in pdbs_images/0.125_80_4_pH7_fragB_noH.result.pdb and 0.125_80_10_pH7_fragB_noH.result.pdb showing as expected 0 charged histidines predicted see fragB_all_his0_hpp.png. However for simulations of all 16 HIS charged: 0.125_80_10_pH7_segB_hispplus1_500ns_then_10ns_nH.result.pdb  only two predicted as charged histidines : fragB_all_his1_hpp.png. The importance of initial frame for determining HIS form is crucial and challenging for IDRs
+*trying to apply the H++ for known histidine charges of my previous amberff simulations for fragment B.
+Results for simulation 10ns frame after 500ns previous run with all histidines non-charged for internal dielectric constant of 4 and 10
+are in pdbs_images/0.125_80_4_pH7_fragB_noH.result.pdb and 0.125_80_10_pH7_fragB_noH.result.pdb showing as expected 0 charged histidines
+predicted see fragB_all_his0_hpp.png. However for simulations of all 16 HIS charged: 0.125_80_10_pH7_segB_hispplus1_500ns_then_10ns_nH.result.pdb
+only two predicted as charged histidines : fragB_all_his1_hpp.png. 
+The importance of initial frame for determining HIS form is crucial and challenging for IDRs
 
 all-atom:
-*create /home_d/rivka/Bioinformatics_HIS/all_atom/HSP_PHE  &&  /home_d/rivka/Bioinformatics_HIS/all_atom/PHE_PHE  && /home_d/rivka/Bioinformatics_HIS/all_atom/HSD_HSD  
+*create /home_d/rivka/Bioinformatics_HIS/all_atom/HSP_PHE  &&  /home_d/rivka/Bioinformatics_HIS/all_atom/PHE_PHE 
+  && /home_d/rivka/Bioinformatics_HIS/all_atom/HSD_HSD  
   please note the charm ff directory of HSP includes an extended ffbonded file with NH2 CTA CT2A angles and dihedrals with H, CPH1, HA2 which are missing and copied form newer ff versions.
 
 *prepare initial frame to run from and pulling conformations to submit on cluster like: /home/rivka/Bioinformatics/all-atom/minimize_geometry/HSP_PHE
 
-12/10/2022
+# 12/10/2022
 short day as before:
 
 all-atom simulations were not running during the night but during this day.
@@ -27,13 +36,16 @@ all-atom simulations were not running during the night but during this day.
 
 
 prepare a script to gather all the free-energy values and com to plot:
-*initial stepes: /home_d/rivka/Bioinformatics_HIS/all_atom/HSD_PHE/umbrella/free_energy_grep.sh (will later be moved to a scripts useful directory like: /home_d/rivka/Bioinformatics_HIS/all_atom/useful_files
-reading the output of uniformlly spaced initial com conformations of the two pi groups from a given /trajectories/rivka directory into a free_energy.dat output file including the conformation id (e.g. id 17 for :  umbrella17.edr conf17.gro) the initial com hraminically restraned distance and the free energy average value.
+*initial stepes: /home_d/rivka/Bioinformatics_HIS/all_atom/HSD_PHE/umbrella/free_energy_grep.sh (will later be moved to a scripts useful directory like:
+/home_d/rivka/Bioinformatics_HIS/all_atom/useful_files
+reading the output of uniformlly spaced initial com conformations of the two pi groups from a given
+/trajectories/rivka directory into a free_energy.dat output file including the conformation id (e.g. id 17 for :  umbrella17.edr conf17.gro)
+the initial com hraminically restraned distance and the free energy average value.
 *finished writing script: see result vi /home_d/rivka/Bioinformatics_HIS/all_atom/HSD_PHE/umbrella/free_energy_vs_com.dat 
 *find script also at: vi /home_d/rivka/Bioinformatics_HIS/all_atom/useful_files//free_energy_grep.sh
 
 
-13/10/2022
+# 13/10/2022
 *working on research proposal
 check if H++ can recognize NMR studied histidines correctly: 10.1002/prot.10177 
 -1PNT
@@ -84,10 +96,11 @@ also check histo.xvg for maximal overlap to ensure results.
 @    xaxis  label "\xx\f{} (nm)"
 @    yaxis  label "count
 
-*create a script for searching T-faced histidines in all files, not just 'charged' directory with all aromatic residues! see: vi /home_d/rivka/Bioinformatics_HIS/python_codes/test_analysis/find_his_prependicular.py
+*create a script for searching T-faced histidines in all files, not just 'charged' directory with all aromatic residues!
+see: vi /home_d/rivka/Bioinformatics_HIS/python_codes/test_analysis/find_his_prependicular.py
 * restricting more with the script:  python find_his_prependicular_quantumstruc.py
 
-14/10/2022
+# 14/10/2022
 *research proposal, try to justify that all existing quantum info does not yield observed conformations. Need to MD is there,..
 
 *results from looking for prependicular T-shaped like conformation are there running over 6535 pdb files. vi T_shaped_all.csv: 468 such interactions but repeating chains, distance of 4A like quantum!
@@ -104,43 +117,49 @@ running:
 
 
 
-*plot free energy profile and not the potential energy or LJ-SR only! using wham from umbrella tutorial. see updated notes at /home_d/rivka/Bioinformatics_HIS/all_atom/HSD_PHE/umbrella
+*plot free energy profile and not the potential energy or LJ-SR only! using wham from umbrella tutorial.
+See updated notes at /home_d/rivka/Bioinformatics_HIS/all_atom/HSD_PHE/umbrella
 
 
-16/10/2022
+# 16/10/2022
 
-resubmitting cluster runs. Turns out using 64 cores 4,8 options improves run by 100 times faster!!!!!!!!!!!!!! compared to using 32 only (running two simultaneously)
+resubmitting cluster runs. Turns out using 64 cores 4,8 options improves run by 100 times faster!!!!!!!!!!!!!!
+compared to using 32 only (running two simultaneously)
 
 resubmitting: HSD_HSD , PHE_PHE and HSP_PHE all using charm36!! (note dates) . 1.2 hour per run, total 41 runs -> 13 hours using 4 nodes if available :)
 
 *preparing new HSD_PHE simulations in water!! /home_d/rivka/Bioinformatics_HIS/all_atom/HSD_PHE/umbrella/water
 to compare with quantum results http://journal.chemistrycentral.com/content/7/1/92
 
-17/10/2022
+# 17/10/2022
 some all atom simulations returned!
-adding PHE-PHE and HSD-HSD and HSP-PHE to profiles graph in umbrella_plots.ipynb located at : /home_d/rivka/Bioinformatics_HIS/all_atom/HSD_PHE/umbrella/txts (until it'll shift)
+adding PHE-PHE and HSD-HSD and HSP-PHE to profiles graph in umbrella_plots.ipynb located at :
+/home_d/rivka/Bioinformatics_HIS/all_atom/HSD_PHE/umbrella/txts (until it'll shift)
 
-18/10/2022
+# 18/10/2022
 conference : 8:30 - 17:30 
 results from HSD_PHE_charm36_water yielded a potential that's not satisfying...
 
-23/10/2022
-working on the presentation for Tuesday. Research proposal discussion with Koby: avoid using 'jargons' as LLPS or names of specific coarse-grain models as HPS and KH.
+# 23/10/2022
+working on the presentation for Tuesday. Research proposal discussion with Koby: 
+avoid using 'jargons' as LLPS or names of specific coarse-grain models as HPS and KH.
 make a flow that's organized. Number goals and refer to it by ordering. 
 
-24/10/2022
+# 24/10/2022
 preparing presenations. Reading about pi-pi stacking in force fields and types of force-fields to be used...
 
 
-25/10/2022
+# 25/10/2022
 presenting my presentation!! so far nite to include titles for graphs and or descritions to follow!
-milan suggested using MD force fields or QM methods to use r,teta and phi coordinates to get minimal energy geometry! but then many simulations to run. Also 50 ns may be enough...
+milan suggested using MD force fields or QM methods to use r,teta and phi coordinates to get minimal energy geometry! 
+but then many simulations to run. Also 50 ns may be enough...
 
-26/10/2022
+# 26/10/2022
 login to chemfarm!!!!
 ssh -X rivkac@chemfarm.weizmann.ac.il
 
-analyze his sequence fraction in IDPS > 0.02 or 2% . using milan's code to download from Uniprot server and a predictor of IDPs probability (to extract > 0.5%)
+analyze his sequence fraction in IDPS > 0.02 or 2% . using milan's code to download from Uniprot server and a predictor of IDPs probability 
+(to extract > 0.5%)
 results in directory : /home_d/rivka/Bioinformatics_HIS/stats/HIS_IDPS
 his_perc.txt presents precentage of hisidine for any single sequqnce (~35000)
 sequqnces : idr_sequences.txt
@@ -149,7 +168,7 @@ analysis in notebook
 also downloaded orca_5_0_3 on chemfarm having some problems...
 
 
-27/10/2022
+# 27/10/2022
 same analysis for PDB stuctured files for histidines!
 directory: /home_d/rivka/Bioinformatics_HIS/stats/HIS_ordered
 current comparison wasnot sufficent (non redundant, counts are missing...)--> old file
@@ -157,11 +176,12 @@ non-redundant lists from PISCES: https://dunbrack.fccc.edu/pisces/PISCES_OptionP
 https://dunbrack.fccc.edu/pisces/download/cullpdb_pc60.0_res0.0-5.0_noBrks_len40-10000_R1.0_Xray+Nmr+EM_d2022_10_11_chains34482.fasta
 
 
-29/10/2022
+# 29/10/2022
 version 2 of research proposal.
-got stuck with some issues of avogadro2 trying to import python code for input to orca. Still orca script is not running properly due to misuse of cores...
+got stuck with some issues of avogadro2 trying to import python code for input to orca. 
+Still orca script is not running properly due to misuse of cores...
 
-30/10/2022
+# 30/10/2022
 submitted research proposal!!!
 continue working on histidine statistics with ordered or disordered...
 install plotly trying to create an interactive scrollbar for choosing the best number of bins...
@@ -181,9 +201,11 @@ Checking for consequtive histidine sequqnces. Check: /stats/HIS_IDPS/dis_his_ind
 
 find a nice algorithm to quantify these sequqnces...
 
-31/10/2022
+# 31/10/2022
 trying to test different HIS sequences: disordered_analysis.ipynb:
-use groupby to cluster histidines indices and length as in file: his_array_sizw. The counter (line) of sequence is also appended to his_array_lines_idx where the lines correspond to the id from the IDPS equal or longer than 40 list: proteins_id_larger40
+use groupby to cluster histidines indices and length as in file: his_array_sizw. 
+The counter (line) of sequence is also appended to his_array_lines_idx where the lines correspond to the id from the IDPS equal or longer than 40 list:
+proteins_id_larger40
 Now dividing this clusters into groups of 2,3,4,5 etc...:
 finally creating len_arr which contains the size of largest cluster for each sequence of histidines (from 0 to 14)!!
 same analysis for all residues: '../HIS_IDPS/dis_{filename}_indices' where filename fits CYS,ALA,PHE,ARG....
@@ -193,13 +215,13 @@ missing counts!!i
 
 ---election and vacation!! --
 
-6/11/2022 
+# 6/11/2022 
 commend for compiling CG: make -f MDmake correct file...
 trying to work out correlations with histidines and other residues. note this paper: https://academic.oup.com/metallomics/article/5/7/904/6015672
 succeeded running short simulations of Orca (sinlgle point energy calculations) : /work/rivkac/projects/histidine_qm
 see: notes: pbsorca 03_22R1.xyz.inp idle
 
-7/11/2022
+# 7/11/2022
 succeded installing avogadro with orca input on my windows laptop!!
 now working on tutorials how to use and study dimers structures...
 
@@ -207,10 +229,12 @@ login from cmd on windows to chemfarm: ssh rivkac@chemfarm.weizmann.ac.il
 copy file from windows to chemfarm using cmd:
 scp "OneDrive - weizmann.ac.il\myThesisStudies\QM\two_neutral_his_opt.inp" rivkac@chemfarm.weizmann.ac.il:\work\rivkac\projects
 
-8/11/2022
+# 8/11/2022
 courses!! 
-fixing 3 day problem: why txt file was returning qsub directive error! the orca input file was prepared in windows platform bu avogadro extension to create orca input!
-This windows files specific strings may have different lengths other than unix/linux platform of chemfarm!!!!!!!!!!!!!!! To convert windows made txt to unix use: 
+fixing 3 day problem: why txt file was returning qsub directive error! 
+the orca input file was prepared in windows platform bu avogadro extension to create orca input!
+This windows files specific strings may have different lengths other than unix/linux platform of chemfarm!!!!!!!!!!!!!!! 
+To convert windows made txt to unix use: 
 dos2unix filename
 #than wait till convertion is done succesfully. Now optimization script was running on chemfarm successfully using: 
 pbsorca trial2.xyz.inp long
@@ -221,7 +245,7 @@ Also finished simple analysis of histidine in ordered vs disordered (cutting pro
 see: disordered_structures.ipynb at /home_d/rivka/Bioinformatics_HIS/stats/HIS_IDPS
 or ordered_structures.ipynb at /home_d/rivka/Bioinformatics_HIS/stats/HIS_ordered
 
-9/11/2022
+# 9/11/2022
 updating statistics of ordered vs IDRs for proteins < 500 aa
 adding a correlation line?
 see: structured_less_than500aa.html  or disordered_less_500aa.html within the above diiscovered directories
@@ -236,9 +260,10 @@ apparently cannot use unix2dos on cmd (windows) so do that on chemfarm...
 unix2dos trial_dos.xyz 
 unix2dos: converting file trial_dos.xyz to DOS format ...
 scp rivkac@chemfarm.weizmann.ac.il:\work\rivkac\projects\histidine_qm\trial_dos.xyz "OneDrive - weizmann.ac.il\myThesisStudies\QM"
-after optimization calculation was done (16 cores - 24 minutes) for 2imidazoles. Take each of them seperately, imidazoleA and B to calculate single-point-energy to find the binding energy!
+after optimization calculation was done (16 cores - 24 minutes) for 2imidazoles. 
+Take each of them seperately, imidazoleA and B to calculate single-point-energy to find the binding energy!
 
-10/11/2022
+# 10/11/2022
 apparently partially stacked opt failed -> increase maxiter to 500 as in 2imid_stacked.inp
 also trying to test 2-3/D dimensional PES scan to find other minimas
 first trying from orca_manual_5_0_3: for COH2 find 3D_scan.inp.
@@ -279,7 +304,7 @@ also 3D_scan of 4 atoms took almost 4 hours for very few points...
 left to understand how to analyze it and how its working!!!!
 
 
-13/11/10 
+# 13/11/10 
 Meeting with Dubai-AI.
 trying to follow finding minimas conformation very similar to 
 DOI
