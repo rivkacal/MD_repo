@@ -339,6 +339,10 @@ qsub submit_crest.sh
 
 now reading useful flags to run with!! see: https://xtb-docs.readthedocs.io/en/latest/crestcmd.html
 
+for now run of 6 minutes became 7 minutes when adding optimization+solvent+other flags as:
+  
+  crest 2imidazoles_control.xyz --prsc --esort --gfn2 -alpb water --opt i--hess | tee -a crest_solv_out.txt
+
 
 
 
