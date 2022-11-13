@@ -23,7 +23,8 @@ The importance of initial frame for determining HIS form is crucial and challeng
 all-atom:
 *create /home_d/rivka/Bioinformatics_HIS/all_atom/HSP_PHE  &&  /home_d/rivka/Bioinformatics_HIS/all_atom/PHE_PHE 
   && /home_d/rivka/Bioinformatics_HIS/all_atom/HSD_HSD  
-  please note the charm ff directory of HSP includes an extended ffbonded file with NH2 CTA CT2A angles and dihedrals with H, CPH1, HA2 which are missing and copied form newer ff versions.
+  please note the charm ff directory of HSP includes an extended ffbonded file with NH2 CTA CT2A angles and dihedrals with H, CPH1, HA2 which are missing
+  and copied form newer ff versions.
 
 *prepare initial frame to run from and pulling conformations to submit on cluster like: /home/rivka/Bioinformatics/all-atom/minimize_geometry/HSP_PHE
 
@@ -103,7 +104,8 @@ see: vi /home_d/rivka/Bioinformatics_HIS/python_codes/test_analysis/find_his_pre
 # 14/10/2022
 *research proposal, try to justify that all existing quantum info does not yield observed conformations. Need to MD is there,..
 
-*results from looking for prependicular T-shaped like conformation are there running over 6535 pdb files. vi T_shaped_all.csv: 468 such interactions but repeating chains, distance of 4A like quantum!
+*results from looking for prependicular T-shaped like conformation are there running over 6535 pdb files.
+vi T_shaped_all.csv: 468 such interactions but repeating chains, distance of 4A like quantum!
 
 *find only his-his prependicular: python find_his_his_prepend.py
 *from T_shaped_his_his4A.csv: 276 such conformations
@@ -304,7 +306,7 @@ also 3D_scan of 4 atoms took almost 4 hours for very few points...
 left to understand how to analyze it and how its working!!!!
 
 
-# 13/11/10 
+# 13/11/2022 
 Meeting with Dubai-AI.
 trying to follow finding minimas conformation very similar to 
 DOI
