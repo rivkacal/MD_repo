@@ -344,8 +344,25 @@ for now run of 6 minutes became 7 minutes when adding optimization+solvent+other
   crest 2imidazoles_control.xyz --prsc --esort --gfn2 -alpb water --opt i--hess | tee -a crest_solv_out.txt
 
 
+# 14/11/2022
+Paper to note later about charging histidines within coarse-grained (CG) simulations: 
+https://pubs.acs.org/doi/full/10.1021/acs.molpharmaceut.2c00337
 
 
+For citations later using crest: https://pubs.acs.org/doi/10.1021/acs.jctc.9b00143
+https://pubs.rsc.org/en/content/articlelanding/2020/CP/C9CP06869D
+Having results for 2 imidazoles and for one imidazole plus imidazolium in vaccum and implict solvent (water) need a script to reoptimize the conformers within threshold of energy using orca!!! 
+
+-Note that the conformers observed are within 0.05kcal/mol!
+-Note2: having many stacked staggered and prependicular tilted (~35 degrees) for imid0_imid0 both in vaccum and solvent: his0_his0/imid_imid/solv_water/
+in crest_conformers.xyz while finding none in his0_his1 for imid and imidazolium raises a suspicion about calculations results depending on inital conformation. That's why another test was made: creating imidazole and imidazolium stacked parallel inital geometry and resubmitting at : 
+/work/rivkac/projects/histidine_qm/his0_his1/imid_plus_imidazolium/solv_water/test (note that is important to work in different directories otherwise
+crest overwrites the output files of energies and conformers and so on)
+These test reveals similar conformers for the approximately same 4kcal/mol difference in solvent, though not exact these conformers will be
+reoptimized at higher level DFT later anyways ...
+-Note3: for imid+imidazolium in vaccum only one conformer was found with a proton in between the two histidines! this is different then the water simulations but **_may suggest a role in proton (charged) transfer beterrn amino acids depending on conditions!!!_**
+
+script directory: /work/rivkac/projects/histidine_qm/scripts
 
 
 
