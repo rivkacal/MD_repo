@@ -363,6 +363,125 @@ reoptimized at higher level DFT later anyways ...
 -Note3: for imid+imidazolium in vaccum only one conformer was found with a proton in between the two histidines! this is different then the water simulations but **_may suggest a role in proton (charged) transfer beterrn amino acids depending on conditions!!!_**
 
 script directory: /work/rivkac/projects/histidine_qm/scripts
+script works & submits automatically jobs. Think about sleep option... done for all imid0-imid0 imid0-imid1 both in vaccum and solvent.
+left to gather results and compare...
+
+optimization takes seconds on the level of BLYP (conformations must be well optimized!!!! yay! :) )
+
+# 15/10/2022
+PSF in the morning & then group meeting & then departmental seminar :)
+My schrodinger account was accepted: 
+downloaded MacroModel !!
+make gather_final energy bash script to gather the final single point energy of optimization for each conformer, see scripts dir.
+
+now we get a list with different energies than predicted with the crest methods (should be close). Extract the energies and conf by:
+./gather_final engrad > orca_energies
+then sort this using: 
+sort -k2 -n orca_energies > orca_sorted_energ
+remember the optimization also changes the structure, so to get the final structure appears in the last trajectory:
+confX_trj.xyz
+
+Given the conformations (left to prepare script to gather them besides energy with threshold), now how to define geometry from xyz file?
+first use: https://github.com/zotko/xyz2graph
+
+this is visualized at: /home_d/rivka/Bioinformatics_HIS/QM_calc/visualize_molec.ipynb
+for handling calculations: https://molmod.github.io/molmod/tutorial/molecule.html
+
+splitting structures on chemfarm cluster:
+obabel copy.xyz -Ofrag.xyz --separate -m
+diffuculties installing Open-babel or link to python. Libraries and so staff...
+think about splitting the output in chemfarm where the above command works
+
+side note: Lavi's paper whose supporting info contains 1 CG step ~ 50ps https://academic.oup.com/nar/article/48/4/1701/5699673
+
+
+# 16/11/2022
+
+finding it difficult to work with another format (xyz) try to trasform it to PDB:
+
+obabel frag1.xyz -O frag1.pdb
+
+for copy.xyz file as well. groups will be identified as ligands but different ones! 
+pymol does load it. 
+Now left to test if it can identify histidine...
+Having C and N terimnal successfuly identify histidine!!!:
+obabel histidine.xyz -O histidine.pdb
+at: /work/rivkac/projects/histidine_qm/his0_his0/imid_imid/solv_water
+
+now omitting C,N terminal up to the carbon1 only: does not recognize as histidine...
+
+running using crest conformations scan reveals too many conformations within a very short enegetic distance --> increase this sampling by:
+--ethr 0.1 
+still 180 and 165 conformers -->
+--ethr 0.2
+--ethr 0.5 does not help either...
+
+running for all 215 conformers optimizations and screening later...
+many jobs got suspended-> not optimal solution
+
+need to write a script to gather all files got suspended (orca not terminated succesfully)
+****ORCA TERMINATED NORMALLY**** for proper files...
+gather these into a list to resubmit: 
+grep -L  "****ORCA TERMINATED NORMALLY****" *.out > list_resub
+then rename to inp:
+./replace_out_inp.sh resub
+for i in `cat list_resub`; do pbsorca $i idle; sleep 1; done
+
+--running crest for HSD_HSP,HSE_HSP and HSD_HSE stripped N,C terminus in both vaccum and solvent
+
+# 17/10/2022
+
+solving HW #1 for PSF course.
+discussing Macromodel...
+finding out that for charged flag -chrg 1 the charge was assigned to the imidazole and not to the imidazolium! problem when doing MD, 
+and not calculating orbitals as in orca. 
+Now for non-charged may continue using crest altough 200 conformations are revelead.
+
+How to compare geometry to search in PDB? 
+start with those in Phe paper (altough Phe is hetroatomic ring and HIS not, also problematic for residues without plane...). See:
+https://reader.elsevier.com/reader/sd/pii/0014579385809820?token=E75C9BBEDB5EDF547E41B1FD6290C4C1FA8CB25F59B0E8B5DAD7043060819E1168B7A1A691B41CE93F1ECF7710455EFC&originRegion=eu-west-1&originCreation=20221117162337
+The interaction between phenylalanine rings in proteins. 
+
+
+Trying to fix order vs disordered to share same axis and remove the tail to find out correlations...at stats dir.
+
+# 20/10/2022
+
+Loading the desired geometry (identified as ligand1 and ligand2 ) into PDB structure to analyze its geometry with existing functions...
+defenitions from PHE study paper cited on 17/10/2022...
+
+To load the ligands and identify each atom we'll need to take the input as sequqnce of C,H,N,H etc and number each atom!!
+script: distinguish_ligands_atoms.py works! now at '/home_d/rivka/Bioinformatics_HIS/python_codes/test_analysis/scripts. Gets input of filename and retirns the same lines with replacing the column of atom name/id with numbered atoms! now only for N,C,H...The output filename starts with 'sorted_<inputfilename>.pdb'. see pdb_files dir.
+  
+# 21/10/2022
+  sick
+  
+#22/10/2022
+  sick
+  
+# 23/10/2022
+  
+  continue working on geometry analysis: first take a given pdb ligan sorted input and identify with pdb atom naming of sidechain atoms, CB, CD1 etc..
+  please note this paper for parametrs choice of bond lengths: https://pubs.acs.org/doi/pdf/10.1021/j100589a006
+  
+  currently the code gets numerucally sorted pdb ligand HIS and returns the correspondin row coordinates of heavyatoms as histidine PDB format
+  {'CA': 0, 'CB': 1, 'CG': 4, 'ND1': 5, 'CE1': 6, 'NE2': 8, 'CD2': 9}
+  can also identify HIS: HSP,HSD,HSE
+  
+ script works for single residue change and identify but for more than one residue the line index is not the group atom index!!!
+  think of using size of all previous residue identified in sorted pdb file...
+  
+
+
+
+
+
+
+
+
+
+
+
 
 
 
