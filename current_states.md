@@ -456,7 +456,7 @@ script: distinguish_ligands_atoms.py works! now at '/home_d/rivka/Bioinformatics
 # 21/10/2022
   sick
   
-#22/10/2022
+# 22/10/2022
   sick
   
 # 23/10/2022
@@ -470,6 +470,38 @@ script: distinguish_ligands_atoms.py works! now at '/home_d/rivka/Bioinformatics
   
  script works for single residue change and identify but for more than one residue the line index is not the group atom index!!!
   think of using size of all previous residue identified in sorted pdb file...
+  
+ # 24/10/2022
+  
+Fixing ligands issue noted previously, see: ligand_to_residue.py at /home_d/rivka/Bioinformatics_HIS/python_codes/test_analysis
+use: python ligand_to_residue.py current_minima_2HSD.pdb
+find outputs at: /home_d/rivka/Bioinformatics_HIS/python_codes/test_analysis/pdb_files/
+1. sorted_current_minima_2HSD.pdb
+2. residuesHSD_1_HSD_2__current_minima_2HSD.pdb
+
+  **works** yay. Next step: define geometry search parameters: https://reader.elsevier.com/reader/sd/pii/0014579385809820?token=E75C9BBEDB5EDF547E41B1FD6290C4C1FA8CB25F59B0E8B5DAD7043060819E1168B7A1A691B41CE93F1ECF7710455EFC&originRegion=eu-west-1&originCreation=20221117162337
+  
+ copied: The geometry and energetics of such interactions will be crucial for protein structure, specificity and activity.
+ steps:
+ - define interaction between two Phe rings by calculationg the shorter inter-molecular C-C distance denoted d.
+   The interacting pairs are chosen as those who have d<=4.6A as the WDV distance between two aromatic C-H is 3.6A with additional 1A error.
+ - run over the interacting pairs extracted denoted F1 and F2 and find:
+   1. alculate 2 parameters, which are independent of the coordinate system:
+      D = distance between centre of rings (A)
+      P = angle between the rings planes
+   2. Define a ‘reference’ phenylalanine (PHE),placed with the centre of the ring at the origin 0, with the x-axis along 0-CG; the z-axis perpen-
+        dicular to the ring-plane and y in the plane of the ring, orthogonal to x and z (see fig.1).
+        Fig.1.:
+       ![plot](./PHE_PHE_img.png)
+                                                             
+   3. Superpose Fl on this reference PHE, apply the same matrix to F2 and calculate the polar coor-dinates TB, Tti of the centroid of the second ring 02,       where: TBI = angle of elevation of 02 from the plane of Fl (azimuthal angle)
+      Tdl = equatorial angle of 02 in the plane of Fl    
+   4. Repeat step 3, using F2 to define the coordinate system and calculate TBz, T~z, the polar coor-dinates of the centroid of Fl relative to F2. Note:
+      these will be different from TB;, Tq51
+ 
+
+  
+  
   
 
 
